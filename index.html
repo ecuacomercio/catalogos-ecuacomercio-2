@@ -605,26 +605,30 @@ function hubSearch(q) {
   searchHint.textContent = `Encontrados ${results.length} productos.`;
   const shown = results.slice(0, 60);
 
-  searchResults.innerHTML = shown.map(item => {
-    const currentQty = qtyState[item.c] || 0;
-    return `
-    <div class="rcard" id="card-${item.c}">
-      <img class="rthumb" src="${item.t || ''}" alt="" onerror="this.outerHTML='<div class=\\'rthumb\\'>📦</div>'">
-      <div class="rinfo">
-        <div class="rbrand">${item.b}</div>
-        <div class="rname">${item.n}</div>
-        <div class="rcode">${item.c}</div>
-        <div class="rprice">$${(item.p != null ? item.p.toFixed(2) : '—')}</div>
+searchResults.innerHTML = shown.map(item => {
+      const currentQty = qtyState[item.c] || 0;
+      const urlCategoria = `${item.href || ''}?search=${encodeURIComponent(item.n)}`;
+      return `
+      <div class="rcard" id="card-${item.c}">
+        <img class="rthumb" src="${item.t || ''}" alt="" onerror="this.outerHTML='<div class=\\'rthumb\\'>📦</div>'">
+        <div class="rinfo">
+          <div class="rbrand">${item.b}</div>
+          <div class="rname">${item.n}</div>
+          <div class="rcode">${item.c}</div>
+          <div class="rprice">$${(item.p != null ? item.p.toFixed(2) : '—')}</div>
+        </div>
+        <div class="qty-selector" id="qty-${item.c}" style="display:flex;">
+          <a href="${urlCategoria}" class="add-btn" style="background:var(--accent-dark); text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Ver producto</a>
+          <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+            <button class="qty-btn" onclick="changeQty('${item.c}', -1)">-</button>
+            <span class="qty-val" id="qty-val-${item.c}">${currentQty}</span>
+            <button class="qty-btn" onclick="changeQty('${item.c}', 1)">+</button>
+            <button class="add-btn" onclick="addToCartFromCard('${item.c}')">Añadir</button>
+          </div>
+        </div>
       </div>
-      <div class="qty-selector" id="qty-${item.c}">
-        <button class="qty-btn" onclick="changeQty('${item.c}', -1)">-</button>
-        <span class="qty-val" id="qty-val-${item.c}">${currentQty}</span>
-        <button class="qty-btn" onclick="changeQty('${item.c}', 1)">+</button>
-        <button class="add-btn" onclick="addToCartFromCard('${item.c}')">Añadir</button>
-      </div>
-    </div>
-    `;
-  }).join('');
+      `;
+    }).join('');
 
   if (results.length > 60) {
     searchResults.innerHTML += '<p style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:12.5px;">Mostrando 60 de ' + results.length + ' resultados — afina tu búsqueda para ver más.</p>';

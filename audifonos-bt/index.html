@@ -88,7 +88,8 @@
     flex-wrap:wrap;
     align-items:center;
   }
-  #search{
+
+  /* #search{
     flex:1 1 260px;
     background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.22);
@@ -98,7 +99,41 @@
     font-family:var(--sans);
     font-size:14px;
     outline:none;
+  } */
+ 
+  .search-container {
+    position: relative;
+    flex: 1 1 260px;
+    display: flex;
+    align-items: center;
   }
+  #search {
+    width: 100%;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.22);
+    color: #fff;
+    padding: 10px 36px 10px 14px; /* Espacio a la derecha para la X */
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+  }
+  #search::placeholder{color:#b8a6a1;}
+  #search:focus{border-color:#e4322d;background:rgba(255,255,255,.13);}
+  
+  .clear-search-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #b8a6a1;
+    cursor: pointer;
+    font-size: 16px;
+    display: none;
+    padding: 0;
+  }
+  .clear-search-btn:hover { color: #fff; }
+  
   #search::placeholder{color:#b8a6a1;}
   #search:focus{border-color:#e4322d;background:rgba(255,255,255,.13);}
   .cat-select{
@@ -407,9 +442,12 @@
       <b id="fecha-hoy"></b>
     </div>
   </div>
-  <div class="controls">
+<div class="controls">
     <a class="home-btn" href="../" title="Volver al menu de catalogos ECUACOMERCIO">&#8592; Menu</a>
-    <input id="search" type="text" placeholder="Buscar por nombre o código (ej: NX-7000, mouse, teclado, wireless)…">
+    <div class="search-container">
+      <input id="search" type="text" placeholder="Buscar por nombre o código (ej: NX-7000, mouse, teclado, wireless)…">
+      <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearchInput()">✕</button>
+    </div>
   </div>
 </header>
 
@@ -866,6 +904,52 @@ document.getElementById('search').addEventListener('input', render);
 document.getElementById('cliNombre').addEventListener('change', autocompletarCliente);
 poblarClientes();
 
+// --- AUTO-DETECTAR BÚSQUEDA DESDE LA URL ---
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get('search');
+  if (searchQuery) {
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+      searchInput.value = searchQuery;
+    }
+  }
+})();
+
+const searchInput = document.getElementById('search');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+function updateClearButton() {
+  if (searchInput.value.trim().length > 0) {
+    clearSearchBtn.style.display = 'block';
+  } else {
+    clearSearchBtn.style.display = 'none';
+  }
+}
+
+function clearSearchInput() {
+  searchInput.value = '';
+  updateClearButton();
+  render();
+  searchInput.focus();
+}
+
+searchInput.addEventListener('input', () => {
+  updateClearButton();
+  render();
+});
+
+// Y actualiza el bloque que detecta el parámetro ?search= al cargar la página:
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get('search');
+  if (searchQuery) {
+    if (searchInput) {
+      searchInput.value = searchQuery;
+      updateClearButton();
+    }
+  }
+})();
 
 document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-EC', {year:'numeric',month:'long',day:'numeric'});
 // Contar productos automáticamente
