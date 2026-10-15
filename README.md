@@ -1,3 +1,3 @@
-# Catalogos JOE 2
+# Catalogos Ecuacomercio 2
 
-Segundo sitio de catalogos mayoristas de JOE IMPORTACIONES (misma configuracion). Hub vacio listo para agregar marcas.
+Productos divididos por lineas
