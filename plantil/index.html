@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADAPTADORES · ECUACOMERCIO</title>
+<style>
+  :root{
+    --ink:#1c1512;
+    --paper:#f5f3f1;
+    --panel:#ffffff;
+    --line:#e5ddd8;
+    --accent:#e4322d;
+    --accent-hover:#c1281f;
+    --accent-dark:#231918;
+    --accent-soft:#fbe8e6;
+    --warn:#c65b2e;
+    --muted:#726b66;
+    --mono: "SF Mono","JetBrains Mono",Consolas,monospace;
+    --serif: "Iowan Old Style","Georgia",serif;
+    --sans: "Inter","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== Header ===== */
+  header{
+    background:var(--accent-dark);
+    color:#f3ece9;
+    padding:22px 28px 20px;
+    position:sticky;
+    top:0;
+    z-index:30;
+    box-shadow:0 2px 14px rgba(0,0,0,.18);
+  }
+  .head-row{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .brandmark{display:flex;align-items:baseline;gap:12px;}
+  .brandmark .num{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    color:#ef8f88;
+    text-transform:uppercase;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:30px;
+    margin:2px 0 0;
+    letter-spacing:.01em;
+  }
+  .sub{
+    font-family:var(--mono);
+    font-size:12px;
+    color:#cdbcb7;
+    margin-top:4px;
+    letter-spacing:.03em;
+  }
+  .head-meta{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#d9cac5;
+    text-align:right;
+    line-height:1.6;
+  }
+  .head-meta b{color:#fff;}
+
+  /* ===== Controls bar ===== */
+   .controls{
+    max-width:1400px;
+    margin:12px auto 0;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  /* #search{
+    flex:1 1 260px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.22);
+    color:#fff;
+    padding:10px 14px;
+    border-radius:3px;
+    font-family:var(--sans);
+    font-size:14px;
+    outline:none;
+  } */
+ 
+  .search-container {
+    position: relative;
+    flex: 1 1 260px;
+    display: flex;
+    align-items: center;
+  }
+  #search {
+    width: 100%;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.22);
+    color: #fff;
+    padding: 10px 36px 10px 14px; /* Espacio a la derecha para la X */
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+  }
+  #search::placeholder{color:#b8a6a1;}
+  #search:focus{border-color:#e4322d;background:rgba(255,255,255,.13);}
+  
+  .clear-search-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #b8a6a1;
+    cursor: pointer;
+    font-size: 16px;
+    display: none;
+    padding: 0;
+  }
+  .clear-search-btn:hover { color: #fff; }
+  
+  #search::placeholder{color:#b8a6a1;}
+  #search:focus{border-color:#e4322d;background:rgba(255,255,255,.13);}
+  .cat-select{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.22);
+    color:#fff;
+    padding:10px 12px;
+    border-radius:3px;
+    font-family:var(--sans);
+    font-size:13.5px;
+  }
+
+  .home-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.22);
+    color:#f3ece9;
+    text-decoration:none;
+    font-family:var(--sans);
+    font-size:12.5px;
+    font-weight:600;
+    padding:10px 13px;
+    border-radius:3px;
+    transition:background .15s ease,border-color .15s ease;
+    white-space:nowrap;
+  }
+  .home-btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
+
+  /* ===== Layout ===== */
+  .wrap{
+    max-width:1400px;
+    margin:0 auto;
+    padding:24px 28px 140px;
+  }
+  .resultcount{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--muted);
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    margin:6px 0 16px;
+  }
+  .resultcount b{color:var(--accent-dark);}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:14px;
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    transition:border-color .15s ease, transform .12s ease;
+  }
+  .card.has-qty{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+  .card:hover{transform:translateY(-2px);}
+
+  .imgbox{
+    aspect-ratio:1/1;
+    background:#ffffff;
+    display:flex;align-items:center;justify-content:center;
+    padding:10px;
+    position:relative;
+  }
+  .imgbox img{max-width:100%;max-height:100%;object-fit:contain;}
+  .imgbox.noimg{color:var(--muted);font-family:var(--mono);font-size:10.5px;text-align:center;padding:8px;}
+  .code-tag{
+    position:absolute;top:6px;left:6px;
+    background:rgba(228,50,45,.92);
+    color:#fff;
+    font-family:var(--mono);
+    font-size:9.5px;
+    padding:2px 6px;
+    border-radius:2px;
+    letter-spacing:.03em;
+  }
+
+  .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .pname{
+    font-size:12.6px;
+    line-height:1.32;
+    font-weight:600;
+    color:var(--ink);
+    min-height:32px;
+  }
+  .prow{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+  .price{
+    font-family:var(--mono);
+    font-size:15px;
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+  .price sup{font-size:10px;font-weight:600;margin-right:1px;}
+
+  .qty{
+    display:flex;align-items:center;
+    border:1px solid var(--line);
+    border-radius:3px;
+    overflow:hidden;
+    height:28px;
+  }
+  .qty button{
+    width:26px;height:100%;
+    border:none;background:var(--paper);
+    color:var(--accent-dark);
+    font-size:15px;font-weight:700;
+    cursor:pointer;
+  }
+  .qty button:hover{background:var(--accent-soft);}
+  .qty input{
+    width:38px;height:100%;
+    border:none;border-left:1px solid var(--line);border-right:1px solid var(--line);
+    text-align:center;
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    color:var(--ink);
+    -moz-appearance:textfield;
+  }
+  .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .subtot{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--muted);
+    text-align:right;
+  }
+  .subtot b{color:var(--accent-dark);}
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+  }
+
+  /* ===== Sticky order bar ===== */
+  .orderbar{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    background:var(--accent-dark);
+    color:#fff;
+    z-index:40;
+    box-shadow:0 -4px 20px rgba(0,0,0,.25);
+    transform:translateY(100%);
+    transition:transform .25s ease;
+  }
+  .orderbar.show{transform:translateY(0);}
+  .orderbar-inner{
+    max-width:1400px;margin:0 auto;
+    padding:14px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;
+  }
+  .ob-left{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .ob-stat{font-family:var(--mono);font-size:12px;color:#cdbcb7;}
+  .ob-stat b{font-size:19px;color:#fff;display:block;font-family:var(--sans);}
+  .ob-actions{display:flex;gap:10px;}
+  .btn{
+    font-family:var(--sans);
+    font-size:13.5px;font-weight:600;
+    padding:10px 18px;
+    border-radius:3px;
+    border:1px solid transparent;
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;border-color:rgba(255,255,255,.35);color:#fff;}
+  .btn-ghost:hover{background:rgba(255,255,255,.1);}
+
+  /* ===== Modal ===== */
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(20,14,12,.6);
+    display:none;align-items:center;justify-content:center;z-index:60;padding:20px;
+  }
+  .modal-bg.show{display:flex;}
+  .modal{
+    background:#fff;border-radius:6px;max-width:640px;width:100%;
+    max-height:85vh;display:flex;flex-direction:column;overflow:hidden;
+  }
+  .modal-head{
+    padding:18px 22px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .modal-head h2{font-family:var(--serif);font-size:19px;margin:0;}
+  .modal-head button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+  .modal-body{padding:18px 22px;overflow-y:auto;}
+
+  .cli-form {
+    /* display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;
+    margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line); */
+    display:none;
+  }
+  .cli-field{display:flex;flex-direction:column;gap:4px;}
+  .cli-field.cli-wide{grid-column:1 / -1;}
+  .cli-field label{
+    font-family:var(--mono);font-size:10px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--muted);
+  }
+  .cli-field input{
+    padding:8px 10px;border:1px solid var(--line);border-radius:3px;
+    font-family:var(--sans);font-size:13px;color:var(--ink);
+    background:#fff;outline:none;
+  }
+  .cli-field input:focus{border-color:var(--accent);}
+  .cli-hint{font-family:var(--mono);font-size:10.5px;color:var(--muted);}
+  .cli-hintrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:-2px;}
+  .btn-mini{
+    font-family:var(--sans);font-size:11px;font-weight:600;white-space:nowrap;
+    padding:5px 10px;border-radius:3px;border:1px solid var(--line);
+    background:#fff;color:var(--accent);cursor:pointer;
+  }
+  .btn-mini:hover{background:var(--accent-soft);border-color:var(--accent);}
+  .btn-mini[hidden]{display:none;}
+  @media(max-width:520px){ .cli-form{grid-template-columns:1fr;} }
+  table.order-table{width:100%;border-collapse:collapse;font-size:13px;}
+  table.order-table th{
+    text-align:left;font-family:var(--mono);font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+    border-bottom:1px solid var(--line);padding:0 6px 8px;
+  }
+  table.order-table td{padding:8px 6px;border-bottom:1px solid #eef1f0;vertical-align:top;}
+  table.order-table td.num{font-family:var(--mono);text-align:right;}
+  .order-total-row td{font-weight:700;border-top:2px solid var(--ink);border-bottom:none;padding-top:12px;}
+  .modal-foot{
+    padding:16px 22px;border-top:1px solid var(--line);
+    display:flex;gap:10px;justify-content:flex-end;
+  }
+  .btn-dark{background:var(--accent-dark);color:#fff;}
+  .btn-dark:hover{background:var(--accent);}
+  .btn-outline{background:#fff;border-color:var(--line);color:var(--ink);}
+  .btn-outline:hover{background:var(--paper);}
+  textarea.copybox{
+    width:100%;min-height:120px;margin-top:14px;
+    font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--line);border-radius:4px;padding:10px;
+    color:var(--muted);
+  }
+  .copied-msg{font-family:var(--mono);font-size:11px;color:var(--accent);margin-left:8px;}
+        /* Ocultar botón Descargar Excel */
+  .modal-foot .btn[onclick="exportExcel()"]{
+    display:none;
+  }
+
+  @media (max-width:640px){
+    header{padding:10px 14px 8px;}
+    h1{font-size:21px;}
+    .wrap{padding:18px 14px 150px;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+    .orderbar-inner{padding:12px 16px;}
+    .qty{height:34px;}
+    .qty button{width:32px;font-size:17px;}
+    .qty input{width:42px;font-size:16px;}
+
+        /* NUEVO: Bajar el selector de cantidades en móviles */
+    .prow {
+      flex-direction: column;
+      align-items: flex-start; /* Alinea el precio a la izquierda */
+      gap: 8px; /* Da un pequeño espacio entre el precio y el selector */
+    }
+    .qty {
+      width: 100%; /* Hace que el selector ocupe todo el ancho disponible */
+      justify-content: space-between; /* Distribuye los botones - y + a los extremos */
+    }
+    .subtot {
+      text-align: left; /* Alinea el subtotal a la izquierda para que coincida */
+      margin-top: 4px;
+    }
+
+    .chip{padding:9px 14px;font-size:11.5px;}
+    .btn{padding:12px 18px;font-size:14px;}
+    #search{font-size:16px;padding:12px 14px;}
+    .modal{max-height:92vh;}
+    
+  }
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="max-width:600px;margin:60px auto;padding:24px;background:#fff8f0;border:1px solid #e0b98a;border-radius:6px;font-family:sans-serif;color:#5a3d1f;">
+    <strong>Este catálogo necesita JavaScript activo.</strong><br><br>
+    Si estás viéndolo dentro de WhatsApp, Google Drive, Gmail u otra app de vista previa, las imágenes, precios y cantidades no se van a mostrar.<br><br>
+    Solución: guarda el archivo en tu teléfono y ábrelo directamente con <strong>Chrome</strong> (no con el visor interno de la app donde lo recibiste).
+  </div>
+</noscript>
+
+<header>
+  <div class="head-row">
+    <div class="brandmark">
+      <div>
+        <div class="num">ECUACOMERCIO</div>
+        <h1>ADAPTADORES</h1>
+        <!-- <div class="sub">16 productos · Mouse, teclados y accesorios</div> -->
+         <div class="sub" id="catalogSubtitle">Productos...</div>
+      </div>
+    </div>
+    <div class="head-meta">
+      Cuenca, Ecuador<br>
+      <b id="fecha-hoy"></b>
+    </div>
+  </div>
+<div class="controls">
+    <a class="home-btn" href="../" title="Volver al menu de catalogos ECUACOMERCIO">&#8592; Menu</a>
+    <div class="search-container">
+      <input id="search" type="text" placeholder="Buscar por nombre o código (ej: NX-7000, mouse, teclado, wireless)…">
+      <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearchInput()">✕</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="wrap">
+  <!-- categorías se inyectan aquí -->
+</div>
+
+<div class="orderbar" id="orderbar">
+  <div class="orderbar-inner">
+    <div class="ob-left">
+      <div class="ob-stat">Ítems<b id="ob-items">0</b></div>
+      <div class="ob-stat">Unidades<b id="ob-units">0</b></div>
+      <div class="ob-stat">Total pedido<b id="ob-total">$0.00</b></div>
+    </div>
+    <div class="ob-actions">
+      <button class="btn btn-ghost" onclick="clearOrder()">Vaciar</button>
+      <button class="btn btn-primary" onclick="openModal()">Ver pedido</button>
+      <a class="btn btn-dark" href="../pedido/" style="text-decoration:none;">Pedido completo &#8594;</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Resumen de pedido</h2>
+      <button onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="cli-form">
+        <div class="cli-field"><label for="cliNombre">Cliente</label><input id="cliNombre" type="text" list="clientesGuardados" autocomplete="off" placeholder="Nombre / razón social"></div>
+        <div class="cli-field"><label for="cliTelefono">Teléfono</label><input id="cliTelefono" type="tel" placeholder="09xxxxxxxx"></div>
+        <div class="cli-field cli-wide"><label for="cliDireccion">Dirección</label><input id="cliDireccion" type="text" placeholder="Dirección de entrega"></div>
+        <div class="cli-field cli-wide"><label for="cliCorreo">Correo electrónico</label><input id="cliCorreo" type="email" placeholder="correo@ejemplo.com"></div>
+        <datalist id="clientesGuardados"></datalist>
+        <div class="cli-wide cli-hintrow">
+          <span class="cli-hint" id="cliHint"></span>
+          <button type="button" class="btn-mini" id="btnExportClientes" onclick="exportClientes()" hidden>⬇ Descargar clientes (Excel)</button>
+        </div>
+      </div>
+      <table class="order-table" id="orderTable">
+        <thead><tr><th>Código</th><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead>
+        <tbody id="orderTbody"></tbody>
+      </table>
+      <textarea class="copybox" id="copyBox" readonly></textarea>
+    </div>
+    <div class="modal-foot">
+      <span class="copied-msg" id="copiedMsg"></span>
+      <button class="btn btn-outline" onclick="copyOrder()">Copiar texto</button>
+      <button class="btn btn-primary" style="background:var(--accent);color:#fff;" onclick="exportExcel()">Descargar Excel</button>
+      <a class="btn btn-outline" href="../pedido/" style="text-decoration:none;">Pedido completo &#8594;</a>
+      <button class="btn btn-dark" onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script id="product-data" type="application/json">[]</script>
+
+<script>
+window.addEventListener('error', function(e){
+  const w = document.getElementById('wrap');
+  if(w && !w.dataset.errShown){
+    w.dataset.errShown = '1';
+    w.innerHTML = '<div style="max-width:560px;margin:60px auto;padding:20px;background:#fff2ea;border:1px solid #e0956a;border-radius:6px;font-family:sans-serif;color:#7a3b1a;">'
+      + '<strong>Ocurrió un problema cargando el catálogo.</strong><br><br>'
+      + 'Si estás en el visor interno de WhatsApp, Drive o Gmail, guarda el archivo y ábrelo directamente con <strong>Chrome</strong>.<br><br>'
+      + '<span style="font-family:monospace;font-size:11px;color:#a5673f;">' + (e.message||'') + '</span></div>';
+  }
+});
+
+const RAW = JSON.parse(document.getElementById('product-data').textContent);
+// c=codigo n=nombre g=categoria(no usada) p=precio i=imagen(base64)
+const ALL_SORTED = [...RAW].sort((a,b)=>a.n.localeCompare(b.n));
+
+const qtyState = {}; // codigo -> qty
+
+/* ===== Pedido unificado multi-catalogo (localStorage compartido por origen) ===== */
+const BRAND = "ADAPTADORES";
+const MULTI_KEY = "joe_pedido_multi_v1";
+function _loadMulti(){ try{ return JSON.parse(localStorage.getItem(MULTI_KEY)||"{}"); }catch(e){ return {}; } }
+function _saveMulti(o){ try{ localStorage.setItem(MULTI_KEY, JSON.stringify(o)); }catch(e){} }
+function syncMulti(p, qty){ if(!p) return; var s=_loadMulti(); var k=BRAND+"||"+p.c; if(qty>0){ s[k]={brand:BRAND,c:p.c,cod:(p.cod||''),n:p.n,p:(p.p!=null?p.p:null),q:qty}; } else { delete s[k]; } _saveMulti(s); }
+function restoreFromMulti(){ var s=_loadMulti(); Object.keys(s).forEach(function(k){ var l=s[k]; if(l.brand===BRAND){ qtyState[l.c]=l.q; } }); }
+function clearMultiBrand(){ var s=_loadMulti(); Object.keys(s).forEach(function(k){ if(s[k].brand===BRAND) delete s[k]; }); _saveMulti(s); }
+
+const wrap = document.getElementById('wrap');
+
+function titleCase(s){
+  return s.toLowerCase().replace(/\b\w/g, ch=>ch.toUpperCase());
+}
+function money(n){
+  return '$' + n.toFixed(2);
+}
+
+function render(){
+  const term = document.getElementById('search').value.trim().toLowerCase();
+  wrap.innerHTML = '';
+
+  const items = ALL_SORTED.filter(p=>{
+    return !term || p.n.toLowerCase().includes(term) || (p.cod||'').toLowerCase().includes(term) || (p.g||'').toLowerCase().includes(term);
+  });
+
+  if(items.length===0){
+    wrap.innerHTML = '<div class="empty-state">Sin resultados para tu búsqueda.<br>Prueba con otro término o código.</div>';
+    return;
+  }
+
+  const count = document.createElement('div');
+  count.className = 'resultcount';
+  count.innerHTML = '<b>' + items.length + '</b> productos';
+  wrap.appendChild(count);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  items.forEach(p=> grid.appendChild(buildCard(p)));
+  wrap.appendChild(grid);
+}
+
+function buildCard(p){
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.id = 'card-' + p.c;
+
+  const imgbox = document.createElement('div');
+  if(p.i){
+    imgbox.className = 'imgbox';
+    imgbox.innerHTML = '<span class="code-tag">'+(p.cod||'')+'</span><img src="'+p.i+'" alt="'+p.n+'" loading="lazy">';
+  } else {
+    imgbox.className = 'imgbox noimg';
+    imgbox.innerHTML = '<span class="code-tag">'+(p.cod||'')+'</span>Foto pendiente<br>de proveedor';
+  }
+  card.appendChild(imgbox);
+
+  const info = document.createElement('div');
+  info.className = 'info';
+
+  const name = document.createElement('div');
+  name.className = 'pname';
+  name.textContent = p.n;
+  info.appendChild(name);
+
+  const prow = document.createElement('div');
+  prow.className = 'prow';
+
+  const price = document.createElement('div');
+  price.className = 'price';
+  price.innerHTML = p.p != null ? ('<sup>USD</sup>' + p.p.toFixed(2)) : '—';
+  prow.appendChild(price);
+
+  const qtyBox = document.createElement('div');
+  qtyBox.className = 'qty';
+  qtyBox.innerHTML = `
+    <button onclick="changeQty('${p.c}', -1)">−</button>
+    <input type="number" min="0" value="${qtyState[p.c]||0}" id="qty-${p.c}" onchange="setQty('${p.c}', this.value)">
+    <button onclick="changeQty('${p.c}', 1)">+</button>
+  `;
+  prow.appendChild(qtyBox);
+  info.appendChild(prow);
+
+  const sub = document.createElement('div');
+  sub.className = 'subtot';
+  sub.id = 'sub-' + p.c;
+  updateSubtotText(sub, p);
+  info.appendChild(sub);
+
+  card.appendChild(info);
+  if(qtyState[p.c]>0) card.classList.add('has-qty');
+  return card;
+}
+
+function updateSubtotText(el, p){
+  const q = qtyState[p.c]||0;
+  if(q>0 && p.p!=null){
+    el.innerHTML = q + ' × ' + p.p.toFixed(2) + ' = <b>' + money(q*p.p) + '</b>';
+  } else {
+    el.innerHTML = '&nbsp;';
+  }
+}
+
+function findProduct(c){ return RAW.find(p=>p.c===c); }
+
+function changeQty(c, delta){
+  const cur = qtyState[c]||0;
+  setQty(c, Math.max(0, cur+delta));
+}
+function setQty(c, val){
+  let v = parseInt(val);
+  if(isNaN(v) || v<0) v = 0;
+  qtyState[c] = v;
+  syncMulti(findProduct(c), v);
+  const input = document.getElementById('qty-'+c);
+  if(input) input.value = v;
+  const card = document.getElementById('card-'+c);
+  if(card) card.classList.toggle('has-qty', v>0);
+  const sub = document.getElementById('sub-'+c);
+  if(sub) updateSubtotText(sub, findProduct(c));
+  updateOrderBar();
+}
+
+function updateOrderBar(){
+  const entries = Object.entries(qtyState).filter(([c,q])=>q>0);
+  const bar = document.getElementById('orderbar');
+  if(entries.length===0){ bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+  let units=0, total=0;
+  entries.forEach(([c,q])=>{
+    const p = findProduct(c);
+    units += q;
+    if(p.p!=null) total += q*p.p;
+  });
+  document.getElementById('ob-items').textContent = entries.length;
+  document.getElementById('ob-units').textContent = units;
+  document.getElementById('ob-total').textContent = money(total);
+}
+
+function clearOrder(){
+  Object.keys(qtyState).forEach(c=>{ qtyState[c]=0; });
+  clearMultiBrand();
+  render();
+  updateOrderBar();
+}
+
+function getCliente(){
+  const v = id => (document.getElementById(id).value || '').trim();
+  return {
+    nombre: v('cliNombre'),
+    telefono: v('cliTelefono'),
+    direccion: v('cliDireccion'),
+    correo: v('cliCorreo'),
+  };
+}
+
+function getOrderEntries(){
+  return Object.entries(qtyState).filter(([c,q])=>q>0)
+    .sort((a,b)=>findProduct(a[0]).n.localeCompare(findProduct(b[0]).n));
+}
+
+/* ===== Modo dueño (solo el dueño ve/guarda la base de clientes) ===== */
+const OWNER_CLAVE = 'joe2026';          // clave del dueño — cámbiala si quieres
+const OWNER_FLAG_KEY = 'dji_owner';
+function esOwner(){ try { return localStorage.getItem(OWNER_FLAG_KEY)==='1'; } catch(e){ return false; } }
+
+/* ===== Persistencia de clientes (localStorage) ===== */
+const CLIENTES_KEY = 'dji_clientes_v1';
+function loadClientes(){
+  try { return JSON.parse(localStorage.getItem(CLIENTES_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function saveClienteActual(){
+  if(!esOwner()) return; // solo el dueño construye la base de clientes
+  const cli = getCliente();
+  if(!cli.nombre && !cli.telefono && !cli.correo) return; // nada útil que guardar
+  const list = loadClientes();
+  const norm = s => (s||'').trim().toLowerCase();
+  const idx = list.findIndex(c =>
+    (cli.correo   && norm(c.correo)===norm(cli.correo)) ||
+    (cli.telefono && norm(c.telefono)===norm(cli.telefono)) ||
+    (cli.nombre   && norm(c.nombre)===norm(cli.nombre)));
+  const registro = Object.assign({}, cli, { actualizado: new Date().toISOString().slice(0,10) });
+  if(idx>=0) list[idx] = registro; else list.push(registro);
+  try { localStorage.setItem(CLIENTES_KEY, JSON.stringify(list)); } catch(e){}
+  poblarClientes();
+}
+function poblarClientes(){
+  const list = loadClientes().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+  const row = document.querySelector('.cli-hintrow');
+  const dl = document.getElementById('clientesGuardados');
+  const hint = document.getElementById('cliHint');
+  const btn = document.getElementById('btnExportClientes');
+  if(!esOwner()){
+    // clientes normales: sin base, sin autocompletado, sin botón
+    if(row) row.style.display = 'none';
+    if(dl) dl.innerHTML = '';
+    return;
+  }
+  if(row) row.style.display = '';
+  if(dl){ dl.innerHTML = list.map(c=>'<option value="'+(c.nombre||'').replace(/"/g,'&quot;')+'">').join(''); }
+  if(hint){ hint.textContent = list.length ? ('★ ' + list.length + ' cliente(s) guardado(s) — escribe el nombre para autocompletar') : 'Modo dueño activo — aún sin clientes guardados'; }
+  if(btn){ btn.hidden = list.length===0; }
+}
+
+function exportClientes(){
+  const list = loadClientes();
+  const hint = document.getElementById('cliHint');
+  if(list.length===0){ if(hint) hint.textContent = 'No hay clientes guardados todavía.'; return; }
+  if(hint) hint.textContent = 'Generando Excel de clientes…';
+  loadXLSXLib().then(()=>{
+    const rows = [['Cliente','Teléfono','Dirección','Correo','Actualizado']];
+    list.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''))
+      .forEach(c=> rows.push([c.nombre||'', c.telefono||'', c.direccion||'', c.correo||'', c.actualizado||'']));
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [ {wch:28}, {wch:16}, {wch:40}, {wch:28}, {wch:14} ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `Clientes_DJI_${fecha}.xlsx`);
+    if(hint) hint.textContent = '✓ ' + list.length + ' cliente(s) descargado(s)';
+  }).catch(()=>{
+    if(hint) hint.textContent = 'Sin conexión: no se pudo generar el Excel de clientes.';
+  });
+}
+function autocompletarCliente(){
+  if(!esOwner()) return;
+  const nombre = (document.getElementById('cliNombre').value||'').trim().toLowerCase();
+  if(!nombre) return;
+  const c = loadClientes().find(x => (x.nombre||'').trim().toLowerCase()===nombre);
+  if(!c) return;
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el && !el.value) el.value = val||''; };
+  set('cliTelefono', c.telefono);
+  set('cliDireccion', c.direccion);
+  set('cliCorreo', c.correo);
+}
+
+function buildOrderText(){
+  const cli = getCliente();
+  const entries = getOrderEntries();
+  const lines = [];
+  lines.push('PEDIDO — ' + BRAND + ' / ECUACOMERCIO');
+  lines.push('Fecha: ' + new Date().toLocaleDateString('es-EC'));
+  if(cli.nombre)    lines.push('Cliente: ' + cli.nombre);
+  if(cli.telefono)  lines.push('Teléfono: ' + cli.telefono);
+  if(cli.direccion) lines.push('Dirección: ' + cli.direccion);
+  if(cli.correo)    lines.push('Correo: ' + cli.correo);
+  lines.push('');
+  let total = 0, units = 0;
+  entries.forEach(([c,q])=>{
+    const p = findProduct(c);
+    const subtotal = (p.p||0)*q;
+    total += subtotal; units += q;
+    lines.push(`${p.cod||''} | ${p.n} | Cant: ${q} | P.Unit: ${p.p!=null?money(p.p):'—'} | Subtotal: ${money(subtotal)}`);
+  });
+  lines.push('');
+  lines.push(`TOTAL: ${units} unidades — ${money(total)}`);
+  return lines.join('\n');
+}
+
+function openModal(){
+  const entries = getOrderEntries();
+  const tbody = document.getElementById('orderTbody');
+  tbody.innerHTML = '';
+  let total = 0, units=0;
+  entries.forEach(([c,q])=>{
+    const p = findProduct(c);
+    const subtotal = (p.p||0)*q;
+    total += subtotal; units += q;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.cod||''}</td><td>${p.n}</td><td class="num">${q}</td><td class="num">${p.p!=null?money(p.p):'—'}</td><td class="num">${money(subtotal)}</td>`;
+    tbody.appendChild(tr);
+  });
+  const totalRow = document.createElement('tr');
+  totalRow.className = 'order-total-row';
+  totalRow.innerHTML = `<td colspan="2">TOTAL (${units} unidades)</td><td></td><td></td><td class="num">${money(total)}</td>`;
+  tbody.appendChild(totalRow);
+
+  poblarClientes();
+  document.getElementById('copyBox').value = buildOrderText();
+  document.getElementById('copiedMsg').textContent = '';
+  document.getElementById('modalBg').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
+
+function copyOrder(){
+  const box = document.getElementById('copyBox');
+  box.value = buildOrderText();
+  box.select();
+  document.execCommand('copy');
+  saveClienteActual();
+  document.getElementById('copiedMsg').textContent = '✓ Copiado';
+}
+
+let _xlsxLoading = null;
+function loadXLSXLib(){
+  if(window.XLSX) return Promise.resolve();
+  if(_xlsxLoading) return _xlsxLoading;
+  _xlsxLoading = new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = ()=> resolve();
+    s.onerror = ()=> reject(new Error('no-network'));
+    document.head.appendChild(s);
+  });
+  return _xlsxLoading;
+}
+
+function exportExcel(){
+  const entries = Object.entries(qtyState).filter(([c,q])=>q>0)
+    .sort((a,b)=>findProduct(a[0]).n.localeCompare(findProduct(b[0]).n));
+
+  if(entries.length===0){
+    document.getElementById('copiedMsg').textContent = 'No hay productos en el pedido.';
+    return;
+  }
+
+  document.getElementById('copiedMsg').textContent = 'Generando Excel…';
+
+  loadXLSXLib().then(()=>{
+    buildAndDownloadExcel(entries);
+  }).catch(()=>{
+    document.getElementById('copiedMsg').textContent = 'Sin conexión: no se pudo generar el Excel. Usa "Copiar texto" en su lugar.';
+  });
+}
+
+function buildAndDownloadExcel(entries){
+  const cli = getCliente();
+  const rows = [];
+  rows.push(['PEDIDO MAYORISTA — DJI / JOE IMPORTACIONES']);
+  rows.push(['Fecha:', new Date().toLocaleDateString('es-EC')]);
+  rows.push(['Cliente:', cli.nombre]);
+  rows.push(['Teléfono:', cli.telefono]);
+  rows.push(['Dirección:', cli.direccion]);
+  rows.push(['Correo:', cli.correo]);
+  rows.push([]);
+  rows.push(['Código','Producto','Cantidad','Precio Mayor (USD)','Subtotal (USD)']);
+
+  let total = 0, units = 0;
+  entries.forEach(([c,q])=>{
+    const p = findProduct(c);
+    const subtotal = (p.p||0)*q;
+    total += subtotal; units += q;
+    rows.push([p.cod||'', p.n, q, p.p!=null ? Number(p.p.toFixed(2)) : null, Number(subtotal.toFixed(2))]);
+  });
+
+  rows.push([]);
+  rows.push(['', '', units, 'TOTAL', Number(total.toFixed(2))]);
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [ {wch:12}, {wch:42}, {wch:10}, {wch:18}, {wch:16} ];
+
+  // fusionar título en la fila 1
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:4} }];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
+
+  const fecha = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Pedido_DJI_${fecha}.xlsx`);
+  saveClienteActual();
+  document.getElementById('copiedMsg').textContent = '✓ Excel descargado';
+}
+
+document.getElementById('search').addEventListener('input', render);
+(function initOwner(){
+  try{
+    const params = new URLSearchParams(location.search);
+    if(params.has('dueno')){
+      const v = params.get('dueno');
+      if(v === OWNER_CLAVE){ localStorage.setItem(OWNER_FLAG_KEY,'1'); }
+      else if(v === 'off' || v === '0'){ localStorage.removeItem(OWNER_FLAG_KEY); }
+      // limpia el parámetro de la URL para no dejar la clave a la vista
+      if(history.replaceState){ history.replaceState(null,'',location.pathname); }
+    }
+  }catch(e){}
+})();
+document.getElementById('cliNombre').addEventListener('change', autocompletarCliente);
+poblarClientes();
+
+// --- AUTO-DETECTAR BÚSQUEDA DESDE LA URL ---
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get('search');
+  if (searchQuery) {
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+      searchInput.value = searchQuery;
+    }
+  }
+})();
+
+const searchInput = document.getElementById('search');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+function updateClearButton() {
+  if (searchInput.value.trim().length > 0) {
+    clearSearchBtn.style.display = 'block';
+  } else {
+    clearSearchBtn.style.display = 'none';
+  }
+}
+
+function clearSearchInput() {
+  searchInput.value = '';
+  updateClearButton();
+  render();
+  searchInput.focus();
+}
+
+searchInput.addEventListener('input', () => {
+  updateClearButton();
+  render();
+});
+
+// Y actualiza el bloque que detecta el parámetro ?search= al cargar la página:
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get('search');
+  if (searchQuery) {
+    if (searchInput) {
+      searchInput.value = searchQuery;
+      updateClearButton();
+    }
+  }
+})();
+
+document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-EC', {year:'numeric',month:'long',day:'numeric'});
+// Contar productos automáticamente
+const totalProductos = RAW.length;
+document.getElementById('catalogSubtitle').textContent = 
+  `${totalProductos} producto${totalProductos !== 1 ? 's' : ''} · Todas las marcas`;
+
+restoreFromMulti();
+render();
+updateOrderBar();
+</script>
+</body>
+</html>
